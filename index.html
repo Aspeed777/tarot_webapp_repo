@@ -101,7 +101,6 @@
       const tg = window.Telegram?.WebApp;
       if (tg) tg.expand();
 
-      // Локальные изображения — 9 карт + рубашка
       const FACES = [
         "RWS_Tarot_01_Magician.jpg",
         "RWS_Tarot_02_High_Priestess.jpg",
@@ -119,7 +118,6 @@
       const msg = document.getElementById("message");
       const selected = [];
 
-      // Отобразить все 9 карт
       FACES.forEach(src => {
         const card = document.createElement("div");
         card.className = "card";
@@ -146,7 +144,6 @@
         });
       });
 
-      // Обработчик кнопки
       btn.addEventListener("click", () => {
         if (selected.length !== 3) {
           msg.textContent = "Выберите ровно 3 карты.";
@@ -155,7 +152,8 @@
         console.log("WEBAPP: sendData", selected);
         if (tg && typeof tg.sendData === "function") {
           tg.sendData(JSON.stringify(selected));
-          tg.close();
+          // Ждём, чтобы sendData успело отправиться перед закрытием
+          setTimeout(() => tg.close(), 100);
         } else {
           alert("Отправка: " + selected.join(", "));
         }
