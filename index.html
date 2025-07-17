@@ -15,82 +15,49 @@
       min-height: 100vh;
     }
     .container {
-      width: 100%;
-      max-width: 500px;
-      background: #fff;
-      border-radius: 8px;
+      width: 100%; max-width: 500px;
+      background: #fff; border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      text-align: center;
-      padding-bottom: 20px;
+      text-align: center; padding-bottom: 20px;
     }
     h1 {
-      background: #333;
-      color: #fff;
-      padding: 15px;
-      border-radius: 8px 8px 0 0;
+      background: #333; color: #fff;
+      padding: 15px; border-radius: 8px 8px 0 0;
       font-size: 1.2rem;
     }
     .cards {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px;
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 6px; padding: 10px;
     }
     .card {
-      width: 64px;
-      height: 96px;
-      perspective: 800px;
-      position: relative;
+      width: 64px; height: 96px;
+      perspective: 800px; position: relative;
+      cursor: pointer;
     }
     .card-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transition: transform 0.5s;
-      transform-style: preserve-3d;
-      transform-origin: center center;
+      width: 100%; height: 100%;
+      position: relative; transition: transform 0.5s;
+      transform-style: preserve-3d; transform-origin: center center;
     }
-    .card.flipped .card-inner {
-      transform: rotateY(180deg);
-    }
-    .card-back,
-    .card-front {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 6px;
+    .card.flipped .card-inner { transform: rotateY(180deg); }
+    .card-back, .card-front {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      backface-visibility: hidden; border-radius: 6px;
       object-fit: cover;
     }
-    .card-front {
-      transform: rotateY(180deg);
-    }
+    .card-front { transform: rotateY(180deg); }
     #submitBtn {
-      margin: 8px auto;
-      padding: 8px 16px;
-      font-size: 1rem;
-      background: #555;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      position: sticky;
-      bottom: 10px;
+      margin: 8px auto; padding: 8px 16px;
+      font-size: 1rem; background: #555;
+      color: #fff; border: none; border-radius: 6px;
+      cursor: pointer; position: sticky; bottom: 10px;
     }
-    #submitBtn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
+    #submitBtn:disabled { background: #ccc; cursor: not-allowed; }
     .message {
-      margin-top: 8px;
-      color: red;
-      font-size: 0.9rem;
-      height: 1.2em;
+      margin-top: 8px; color: red;
+      font-size: 0.9rem; height: 1.2em;
     }
-
     @media (max-width: 400px) {
       .card { width: 50px; height: 75px; }
     }
@@ -105,74 +72,60 @@
   </div>
 
   <script>
-    const FACES = [
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_00_Fool.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_01_Magician.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_02_High_Priestess.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_03_Empress.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_04_Emperor.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_05_Hierophant.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_06_Lovers.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_07_Chariot.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_08_Strength.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_09_Hermit.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_10_Wheel_of_Fortune.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_11_Justice.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_12_Hanged_Man.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_13_Death.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_14_Temperance.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_15_Devil.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_16_Tower.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_17_Star.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_18_Moon.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_19_Sun.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_20_Judgement.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_21_World.jpg"
-    ];
-    const BACK = "back.jpg";
-    const container = document.getElementById("cards");
-    const btn = document.getElementById("submitBtn");
-    const msg = document.getElementById("message");
-    const selected = [];
+    window.addEventListener('DOMContentLoaded', () => {
+      // инициализируем WebApp
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+      console.log("Telegram WebApp init:", tg);
 
-    const pool = FACES
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 9);
+      const FACES = [
+        "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_00_Fool.jpg",
+        "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_01_Magician.jpg",
+        // ... до 21
+        "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_21_World.jpg"
+      ];
+      const BACK = "back.jpg";
+      const container = document.getElementById("cards");
+      const btn = document.getElementById("submitBtn");
+      const msg = document.getElementById("message");
+      const selected = [];
 
-    pool.forEach(src => {
-      const card = document.createElement("div");
-      card.className = "card";
+      // 9 случайных карт
+      FACES.sort(() => 0.5 - Math.random()).slice(0, 9).forEach(src => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const inner = document.createElement("div");
+        inner.className = "card-inner";
 
-      const inner = document.createElement("div");
-      inner.className = "card-inner";
+        const backImg = document.createElement("img");
+        backImg.src = BACK;
+        backImg.className = "card-back";
 
-      const backImg = document.createElement("img");
-      backImg.src = BACK;
-      backImg.className = "card-back";
+        const frontImg = document.createElement("img");
+        frontImg.src = src;
+        frontImg.className = "card-front";
 
-      const frontImg = document.createElement("img");
-      frontImg.src = src;
-      frontImg.className = "card-front";
+        inner.append(backImg, frontImg);
+        card.append(inner);
+        container.append(card);
 
-      inner.append(backImg, frontImg);
-      card.append(inner);
-      container.append(card);
-
-      card.addEventListener("click", () => {
-        if (selected.length >= 3 || card.classList.contains("flipped")) return;
-        card.classList.add("flipped");
-        selected.push(src);
-        if (selected.length === 3) btn.disabled = false;
+        card.addEventListener("click", () => {
+          if (selected.length >= 3 || card.classList.contains("flipped")) return;
+          card.classList.add("flipped");
+          selected.push(src);
+          if (selected.length === 3) btn.disabled = false;
+        });
       });
-    });
 
-    btn.addEventListener("click", () => {
-      if (selected.length !== 3) {
-        msg.textContent = "Выберите ровно 3 карты.";
-        return;
-      }
-      Telegram.WebApp.sendData(JSON.stringify(selected));
-      Telegram.WebApp.close();
+      btn.addEventListener("click", () => {
+        if (selected.length !== 3) {
+          msg.textContent = "Выберите ровно 3 карты.";
+          return;
+        }
+        console.log("Отправляем в бот:", selected);
+        tg.sendData(JSON.stringify(selected));
+        tg.close();
+      });
     });
   </script>
 </body>
