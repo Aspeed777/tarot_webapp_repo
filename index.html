@@ -66,54 +66,72 @@
   </div>
 
   <script>
-    // Локальные картинки (только 9 файлов, загружены в корень репозитория)
-    const FACES = [
-      "RWS_Tarot_01_Magician.jpg",
-      "RWS_Tarot_02_High_Priestess.jpg",
-      "RWS_Tarot_03_Empress.jpg",
-      "RWS_Tarot_04_Emperor.jpg",
-      "RWS_Tarot_05_Hierophant.jpg",
-      "RWS_Tarot_06_Lovers.jpg",
-      "RWS_Tarot_07_Chariot.jpg",
-      "RWS_Tarot_08_Strength.jpg",
-      "RWS_Tarot_09_Hermit.jpg"
-    ];
-    const BACK = "back.jpg";
-    const container = document.getElementById("cards");
-    const btn = document.getElementById("submitBtn");
-    const msg = document.getElementById("message");
-    const selected = [];
+    window.addEventListener('DOMContentLoaded', () => {
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+      console.log("WEBAPP initialized:", tg);
 
-    // Перемешиваем и отображаем 9 карт
-    FACES.sort(() => 0.5 - Math.random()).forEach(src => {
-      const card = document.createElement("div"); card.className = "card";
-      const inner = document.createElement("div"); inner.className = "card-inner";
+      // Локальных файлов должно быть 9 в корне репозитория:
+      const FACES = [
+        "RWS_Tarot_01_Magician.jpg",
+        "RWS_Tarot_02_High_Priestess.jpg",
+        "RWS_Tarot_03_Empress.jpg",
+        "RWS_Tarot_04_Emperor.jpg",
+        "RWS_Tarot_05_Hierophant.jpg",
+        "RWS_Tarot_06_Lovers.jpg",
+        "RWS_Tarot_07_Chariot.jpg",
+        "RWS_Tarot_08_Strength.jpg",
+        "RWS_Tarot_09_Hermit.jpg"
+      ];
+      const BACK = "back.jpg";
+      const container = document.getElementById("cards");
+      const btn = document.getElementById("submitBtn");
+      const msg = document.getElementById("message");
+      const selected = [];
 
-      const backImg = document.createElement("img");
-      backImg.src = BACK; backImg.className = "card-back";
+      // Показать все 9 карт
+      FACES.forEach(src => {
+        const card = document.createElement("div");
+        card.className = "card";
 
-      const frontImg = document.createElement("img");
-      frontImg.src = src; frontImg.className = "card-front";
+        const inner = document.createElement("div");
+        inner.className = "card-inner";
 
-      inner.append(backImg, frontImg);
-      card.append(inner);
-      container.append(card);
+        const backImg = document.createElement("img");
+        backImg.src = BACK;
+        backImg.className = "card-back";
 
-      card.addEventListener("click", () => {
-        if (selected.length >= 3 || card.classList.contains("flipped")) return;
-        card.classList.add("flipped");
-        selected.push(src);
-        if (selected.length === 3) btn.disabled = false;
+        const frontImg = document.createElement("img");
+        frontImg.src = src;
+        frontImg.className = "card-front";
+
+        inner.append(backImg, frontImg);
+        card.append(inner);
+        container.append(card);
+
+        card.addEventListener("click", () => {
+          if (selected.length >= 3 || card.classList.contains("flipped")) return;
+          card.classList.add("flipped");
+          selected.push(src);
+          if (selected.length === 3) btn.disabled = false;
+        });
       });
-    });
 
-    btn.addEventListener("click", () => {
-      if (selected.length !== 3) {
-        msg.textContent = "Выберите ровно 3 карты.";
-        return;
-      }
-      Telegram.WebApp.sendData(JSON.stringify(selected));
-      Telegram.WebApp.close();
+      // Обработчик кнопки
+      btn.addEventListener("click", () => {
+        if (selected.length !== 3) {
+          msg.textContent = "Выберите ровно 3 карты.";
+          return;
+        }
+        console.log("WEBAPP: отправляем данные в бота:", selected);
+
+        if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.sendData === "function") {
+          Telegram.WebApp.sendData(JSON.stringify(selected));
+          Telegram.WebApp.close();
+        } else {
+          alert("Выбрано карт: " + selected.join(", "));
+        }
+      });
     });
   </script>
 </body>
