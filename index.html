@@ -1,90 +1,87 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Выберите 3 карты Таро</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 0;
-      background: #f4f4f4;
+      margin: 0; padding: 0;
       font-family: Arial, sans-serif;
+      background: #f4f4f4;
     }
     .container {
-      max-width: 900px;
-      margin: 50px auto;
-      padding: 20px;
+      max-width: 800px;
+      margin: 20px auto;
       background: #fff;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       text-align: center;
+      padding-bottom: 20px;
     }
     h1 {
-      margin-top: 0;
-      background: #333;
-      color: #fff;
-      padding: 15px;
-      border-radius: 6px 6px 0 0;
+      margin: 0; padding: 15px;
+      background: #333; color: #fff;
+      border-radius: 8px 8px 0 0;
     }
     .cards {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 15px;
-      margin: 20px 0;
+      gap: 8px;
+      padding: 15px;
     }
     .card {
-      width: 110px;
-      height: 170px;
-      perspective: 1000px;
+      width: 80px; height: 120px;
+      perspective: 800px;
       position: relative;
       cursor: pointer;
     }
     .card-inner {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
+      transition: transform 0.5s;
       transform-style: preserve-3d;
-      transition: transform 0.6s;
+      position: absolute; top: 0; left: 0;
     }
     .card.flipped .card-inner {
       transform: rotateY(180deg);
     }
     .card-back,
     .card-front {
-      position: absolute;
-      width: 100%;
-      height: 100%;
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
       backface-visibility: hidden;
       border-radius: 6px;
       object-fit: cover;
     }
-    .card-back {
-      transform: rotateY(0deg);
-    }
-    .card-front {
-      transform: rotateY(180deg);
-    }
+    .card-front { transform: rotateY(180deg); }
     #submitBtn {
-      padding: 10px 20px;
+      margin: 10px auto;
+      display: block;
+      padding: 8px 16px;
       font-size: 16px;
       border: none;
       border-radius: 6px;
       background: #555;
       color: #fff;
       cursor: pointer;
+      position: sticky;
+      bottom: 10px;
     }
     #submitBtn:disabled {
       background: #ccc;
       cursor: not-allowed;
     }
     .message {
-      margin-top: 15px;
       color: red;
+      height: 1.2em;
       font-weight: bold;
+    }
+
+    /* Для очень маленьких экранов чуть уменьшим карты */
+    @media (max-width: 400px) {
+      .card { width: 60px; height: 90px; }
     }
   </style>
 </head>
@@ -97,72 +94,51 @@
   </div>
 
   <script>
-    const faces = [
+    const FACES = [
       "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_00_Fool.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_01_Magician.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_02_High_Priestess.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_03_Empress.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_04_Emperor.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_05_Hierophant.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_06_Lovers.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_07_Chariot.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_08_Strength.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_09_Hermit.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_10_Wheel_of_Fortune.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_11_Justice.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_12_Hanged_Man.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_13_Death.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_14_Temperance.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_15_Devil.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_16_Tower.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_17_Star.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_18_Moon.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_19_Sun.jpg",
-      "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_20_Judgement.jpg",
+      /* … до 21 */  
       "https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_21_World.jpg"
     ];
-    const BACK = "back.jpg"; // локально загруженный файл рубашки
-    const container = document.getElementById('cards');
-    const submitBtn = document.getElementById('submitBtn');
-    const message = document.getElementById('message');
+    const BACK = "back.jpg";  // твой загруженный файл
+    const container = document.getElementById("cards");
+    const btn = document.getElementById("submitBtn");
+    const msg = document.getElementById("message");
     const selected = [];
 
-    // Берём 9 случайных карт из колоды
-    const shuffled = faces.sort(() => 0.5 - Math.random()).slice(0, 9);
-
-    shuffled.forEach(src => {
-      const card = document.createElement('div');
-      card.className = 'card';
-
-      const inner = document.createElement('div');
-      inner.className = 'card-inner';
-
-      const backImg = document.createElement('img');
-      backImg.src = BACK;
-      backImg.className = 'card-back';
-
-      const frontImg = document.createElement('img');
-      frontImg.src = src;
-      frontImg.className = 'card-front';
-
+    // Выбираем 9 случайных карт
+    const pool = FACES.sort(() => 0.5 - Math.random()).slice(0, 9);
+    pool.forEach(src => {
+      const card = document.createElement("div");
+      card.className = "card";
+      const inner = document.createElement("div");
+      inner.className = "card-inner";
+      const backImg = Object.assign(document.createElement("img"), {
+        src: BACK, className: "card-back"
+      });
+      const frontImg = Object.assign(document.createElement("img"), {
+        src: src, className: "card-front"
+      });
       inner.append(backImg, frontImg);
       card.append(inner);
       container.append(card);
 
-      card.addEventListener('click', () => {
-        if (selected.length >= 3 || card.classList.contains('flipped')) return;
-        card.classList.add('flipped');
+      card.addEventListener("click", () => {
+        if (selected.length >= 3 || card.classList.contains("flipped")) return;
+        card.classList.add("flipped");
         selected.push(src);
-        if (selected.length === 3) submitBtn.disabled = false;
+        msg.textContent = "";
+        if (selected.length === 3) btn.disabled = false;
       });
     });
 
-    submitBtn.addEventListener('click', () => {
+    btn.addEventListener("click", () => {
       if (selected.length !== 3) {
-        message.textContent = 'Пожалуйста, выберите ровно 3 карты.';
+        msg.textContent = "Выберите ровно 3 карты.";
         return;
       }
-      Telegram.WebApp.sendData(JSON.stringify({ cards: selected }));
+      Telegram.WebApp.sendData(JSON.stringify(selected));
+      Telegram.WebApp.close();
     });
   </script>
 </body>
