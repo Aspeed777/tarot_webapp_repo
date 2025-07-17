@@ -11,23 +11,25 @@
       background: #f4f4f4;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; /* выравнивание сверху */
+      padding: 20px;         /* отступы для прокрутки */
       min-height: 100vh;
+      overflow-y: auto;      /* вертикальный скролл */
     }
     .container {
       width: 100%; max-width: 500px;
       background: #fff; border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      text-align: center; padding-bottom: 20px;
+      text-align: center; padding: 20px;
     }
     h1 {
       background: #333; color: #fff;
       padding: 15px; border-radius: 8px 8px 0 0;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
     }
     .cards {
       display: flex; flex-wrap: wrap;
-      justify-content: center; gap: 6px; padding: 10px;
+      justify-content: center; gap: 8px; margin: 15px 0;
     }
     .card {
       width: 64px; height: 96px;
@@ -37,7 +39,7 @@
     .card-inner {
       width: 100%; height: 100%;
       position: relative; transition: transform 0.5s;
-      transform-style: preserve-3d; transform-origin: center center;
+      transform-style: preserve-3d; transform-origin: center;
     }
     .card.flipped .card-inner { transform: rotateY(180deg); }
     .card-back, .card-front {
@@ -47,13 +49,20 @@
     }
     .card-front { transform: rotateY(180deg); }
     #submitBtn {
-      margin: 8px auto; padding: 8px 16px;
-      font-size: 1rem; background: #555;
-      color: #fff; border: none; border-radius: 6px;
-      cursor: pointer; position: sticky; bottom: 10px;
+      display: block;
+      width: calc(100% - 40px);
+      margin: 10px auto;
+      padding: 10px;
+      font-size: 1rem;
+      background: #555;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
     }
     #submitBtn:disabled { background: #ccc; cursor: not-allowed; }
-    .message { margin-top: 8px; color: red; font-size: 0.9rem; height: 1.2em; }
+    .message { margin-top: 8px; color: red; font-size: 0.9rem; min-height: 1.2em; }
     @media (max-width: 400px) { .card { width: 50px; height: 75px; } }
   </style>
 </head>
@@ -67,11 +76,13 @@
 
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      const tg = window.Telegram.WebApp;
-      tg.expand();
-      console.log("WEBAPP initialized:", tg);
+      const tg = window.Telegram?.WebApp;
+      if (tg) {
+        tg.expand();
+        console.log("WEBAPP initialized", tg);
+      }
 
-      // Локальных файлов должно быть 9 в корне репозитория:
+      // Локальные картинки
       const FACES = [
         "RWS_Tarot_01_Magician.jpg",
         "RWS_Tarot_02_High_Priestess.jpg",
@@ -89,21 +100,13 @@
       const msg = document.getElementById("message");
       const selected = [];
 
-      // Показать все 9 карт
+      // Показываем все
       FACES.forEach(src => {
-        const card = document.createElement("div");
-        card.className = "card";
+        const card = document.createElement("div"); card.className = "card";
+        const inner = document.createElement("div"); inner.className = "card-inner";
 
-        const inner = document.createElement("div");
-        inner.className = "card-inner";
-
-        const backImg = document.createElement("img");
-        backImg.src = BACK;
-        backImg.className = "card-back";
-
-        const frontImg = document.createElement("img");
-        frontImg.src = src;
-        frontImg.className = "card-front";
+        const backImg = document.createElement("img"); backImg.src = BACK; backImg.className = "card-back";
+        const frontImg = document.createElement("img"); frontImg.src = src; frontImg.className = "card-front";
 
         inner.append(backImg, frontImg);
         card.append(inner);
@@ -117,19 +120,18 @@
         });
       });
 
-      // Обработчик кнопки
+      // Кнопка отправки
       btn.addEventListener("click", () => {
         if (selected.length !== 3) {
           msg.textContent = "Выберите ровно 3 карты.";
           return;
         }
-        console.log("WEBAPP: отправляем данные в бота:", selected);
-
-        if (window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.sendData === "function") {
-          Telegram.WebApp.sendData(JSON.stringify(selected));
-          Telegram.WebApp.close();
+        console.log("WEBAPP: sendData", selected);
+        if (tg && typeof tg.sendData === "function") {
+          tg.sendData(JSON.stringify(selected));
+          tg.close();
         } else {
-          alert("Выбрано карт: " + selected.join(", "));
+          alert("Отправка: " + selected.join(", "));
         }
       });
     });
